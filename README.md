@@ -32,14 +32,16 @@ snapstack takes a somewhat unique approach to constructing call stacks:
 Throwing, resolving to an error, returning an error or rejecting a promise all result in the execution's promise rejecting. 
 
 ### "Stackpacks"
-You can load sets of functions from modules under a specified folder or from an npm module. The resulting stacks will be returned in a hash where module names are they keys.
+You can load sets of functions from modules under a specified folder or from an npm module. The resulting stacks will be registered with fount under the stack container and can be executed by name.
 
 ```js
 var fount = require( "fount" );
 var snap = require( "snapstack" )( { fount: fount } );
 
-var stacks = snap.load( "./stacks" );
-var shared = snap.load( "some-npm-lib" );
+snap.load( [ "./stacks", "someNpmLib" ] )
+	.then( function() {
+		return snap.execute( "aLoadedStack" )( {}, {} );
+	} );
 ```
 
 ## Use
