@@ -1,0 +1,35 @@
+{
+  "name": "snapstack",
+  "version": "1.0.0",
+  "description": "A flexible approach to building middleware stacks",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha spec/**/*.spec.js",
+    "ci": "mocha spec/**/*.spec.js -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arobson/snapstack.git"
+  },
+  "keywords": [
+    "middleware"
+  ],
+  "author": "Alex Robson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arobson/snapstack/issues"
+  },
+  "homepage": "https://github.com/arobson/snapstack#readme",
+  "dependencies": {
+    "fount": "~0.2.0-3",
+    "modlo": "1.1.x",
+    "lodash": "^4.6.1",
+    "when": "^3.7.7"
+  },
+  "devDependencies": {
+    "biggulp": "~1.2.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "gulp": "^3.9.1"
+  }
+}
