@@ -324,8 +324,29 @@ describe( "Stack", function() {
 	} );
 
 	describe( "with loaded stacks", function() {
+		var stacks;
 		before( function() {
-			return load( "./spec/stacks/*.js" );
+			return load( "./spec/stacks/*.js" )
+				.then( function( list ) {
+					stacks = list;
+				} );
+		} );
+
+		it( "should load all stacks", function() {
+			_.keys( stacks ).should.eql( [
+				"one",
+				"two",
+				"three",
+				"fourA",
+				"fourB",
+				"fiveA",
+				"fiveB",
+				"sixA",
+				"sixB",
+				"sevenA",
+				"sevenB",
+				"eight"
+			].sort() );
 		} );
 
 		it( "should load and execute stack one", function() {

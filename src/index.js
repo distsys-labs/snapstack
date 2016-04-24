@@ -185,25 +185,33 @@ function load( loader, list ) {
 				return fount.resolve( stackModuleName )
 					.then( processModule.bind( null, fount, stackModuleName ) );
 			} );
-			return when.all( promises );
+			return when.all( promises )
+				.then( function( stacks ) {
+					return _.reduce( _.filter( _.flatten( stacks ) ), function( acc, stack ) {
+						acc[ stack.name ] = stack;
+						return acc;
+					}, {} );
+				} );
 		} );
 }
 
 function processModule( fount, stackModuleName, stackModule ) {
 	if( _.isArray( stackModule ) ) {
 		if( _.isFunction( stackModule[ 0 ] ) ) {
-			createStack( fount, stackModule, stackModuleName );
+			return createStack( fount, stackModule, stackModuleName );
 		} else {
-			_.each( stackModule, function( stack ) {
-				createStack( fount, stack );
+			return _.map( stackModule, function( stack ) {
+				return createStack( fount, stack );
 			} );
 		}
 	} else {
 		if( _.find( _.values( stackModule ), _.isFunction ) ) {
-			createStack( fount, stackModule, stackModule.name || stackModuleName );
+			return createStack( fount, stackModule, stackModule.name || stackModuleName );
 		} else {
-			_.each( stackModule, function( stack, name ) {
-				createStack( fount, stack, name );
+			return _.map( stackModule, function( stack, name ) {
+				if( !_.isString( stack ) ) {
+					return createStack( fount, stack, name );	
+				}
 			} );
 		}
 	}

@@ -32,7 +32,7 @@ snapstack takes a somewhat unique approach to constructing call stacks:
 Throwing, resolving to an error, returning an error or rejecting a promise all result in the execution's promise rejecting. 
 
 ### "Stackpacks"
-You can load sets of functions from modules under a specified folder or from an npm module. The resulting stacks will be registered with fount under the stack container and can be executed by name.
+You can load sets of functions from modules under a specified folder or from an npm module. The resulting stacks will be registered with fount under the stack container and can be executed by name. A list of all loaded stacks are returned as a hash.
 
 ```js
 var fount = require( "fount" );
@@ -139,8 +139,10 @@ The fount instance used by any stacks created. A default internal instance will 
 Loads one or more stacks from a file module or NPM library:
 
 ```js
-var stack1 = snap.load( "./aStack" );
-var stack2 = snap.load( "./stackLib" );
+snap.load( "./aStack" )
+	.then( function( stacks ) {
+		return stacks[ "stackName" ].execute( {}, {} );
+	} );
 ```
 
 Stack modules can return a stack a few different ways:
