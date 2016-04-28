@@ -267,8 +267,8 @@ describe( "Stack", function() {
 
 		it( "should throw an error when adding invalid function", function() {
 			expect( function() {
-				one.append( "g" );
-			} ).to.throw( "Cannot add non-function to stack" );
+				one.append( {}, "g" );
+			} ).to.throw( "Cannot add non-function g to stack: [object Object]" );
 		} );
 
 		it( "should throw an error if a step is invalid or missing", function() {
@@ -345,7 +345,8 @@ describe( "Stack", function() {
 				"sixB",
 				"sevenA",
 				"sevenB",
-				"eight"
+				"eight",
+				"nine"
 			].sort() );
 		} );
 
@@ -395,6 +396,18 @@ describe( "Stack", function() {
 
 		it( "should load and execute stack eight", function() {
 			return exec( "eight" ).should.eventually.equal( "eight" );
+		} );
+
+		it( "should load and execute stack nine (condition 1)", function() {
+			return exec( "nine", {}, { x: 9, z: 50 } ).should.eventually.equal( 9 );
+		} );
+
+		it( "should load and execute stack nine (condition 2)", function() {
+			return exec( "nine", {}, { y: "nine" } ).should.eventually.equal( "nine" );
+		} );
+
+		it( "should reject when no conditions for stack nine are met", function() {
+			return exec( "nine", {}, {} ).should.be.rejectedWith( "The call stack failed to meet any of the supported conditions" );
 		} );
 	} );
 } );

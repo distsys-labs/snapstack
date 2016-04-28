@@ -18,7 +18,7 @@ npm install snapstack -S
  * `accumulator` - an accumulator hash passed to all function calls
  * `fount` - a DI container used to satisfy function arguments not found in the context or accumulator
 
-snapstack takes a somewhat unique approach to constructing call stacks:
+snapstack takes a unique approach to constructing call stacks:
  * each function have its `this` set to the `context` provided during execution
  * each function will have arguments 'injected' from properties on the `context`, the `accumulator` or from `fount`
  * each function's first argument will be an `accumulator` object used to pass values and satisfy argument parameters for future calls
@@ -28,6 +28,7 @@ snapstack takes a somewhat unique approach to constructing call stacks:
    * return a value
    * invoke a callback with an error or value
    * resolve a promise with a value
+ * conditional sets of functions are supported (see [conditions](#conditions))
 
 Throwing, resolving to an error, returning an error or rejecting a promise all result in the execution's promise rejecting. 
 
@@ -113,6 +114,42 @@ modifiedStack.insertBefore( "two", modifier );
 // default stack's call order: one -> two
 // modified stack's call order: one -> modifier -> two
 
+```
+
+### Conditions
+Having middleware that handles specific conditions is common. Having lots of branches in a single function body can make the code difficult to follow or understand. SnapStack supports lists of functions with when guards that determine which function to invoke based on the context and/or the accumulator. The list is evaluated in order. If no condition is satisfied, the step is skipped _unless its the last call in the stack and then an error is returned_.
+
+> Note: if you don't want an error for a step with no matching conditions at the end of the stack, you can end the condition set with ```{ when: true, then: _.noop }``` as a short-hand pass-through.
+
+The `when` property of the condition may be a set of properties that must be true or a predicate that evaluates the envelope and returns true when it should be called. The `then` property would be the function to call.
+
+> Note: the most likely use cases for this are versioning or transport-specific handlers
+
+```javascript
+{
+	handle: [
+		{
+			when: { version: 1 }, // providing a set of properties and values to filter requests for the handler
+			then: function( envelope ) {
+				...
+			}
+		},
+		{
+			when: function( envelope ) { // provide a predicate to test the envelope
+				return envelope.version === 2;
+			},
+			then: function( envelope ) {
+				...
+			}
+		},
+		{
+			when: true, // use at the end as a catch-all if desired
+			then: function( envelope ) {
+				...
+			}
+		}
+	]
+}
 ```
 
 ## API
