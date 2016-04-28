@@ -14,6 +14,9 @@ module.exports = function five() {
 			},
 			two: function() {
 				return "five b";
+			},
+			three: function() {
+				return "unreachable?";
 			}
 		}
 	};	

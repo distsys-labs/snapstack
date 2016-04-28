@@ -329,6 +329,12 @@ describe( "Stack", function() {
 			return load( "./spec/stacks/*.js" )
 				.then( function( list ) {
 					stacks = list;
+					createStack( [
+						"one.one",
+						"two.one",
+						"fourA.one",
+						"fiveB.three"
+					], "custom" )
 				} );
 		} );
 
@@ -408,6 +414,10 @@ describe( "Stack", function() {
 
 		it( "should reject when no conditions for stack nine are met", function() {
 			return exec( "nine", {}, {} ).should.be.rejectedWith( "The call stack failed to meet any of the supported conditions" );
+		} );
+
+		it( "should have created a custom stack from other steps", function() {
+			return exec( "custom" ).should.eventually.equal( "unreachable?" );
 		} );
 	} );
 } );

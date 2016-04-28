@@ -20,8 +20,12 @@ npm install snapstack -S
 
 snapstack takes a unique approach to constructing call stacks:
  * each function have its `this` set to the `context` provided during execution
- * each function will have arguments 'injected' from properties on the `context`, the `accumulator` or from `fount`
  * each function's first argument will be an `accumulator` object used to pass values and satisfy argument parameters for future calls
+ * each function will have a callback supplied as the last argument to help integrate old school async calls
+ * each function will have other arguments 'injected'
+  * from properties on the `context`
+  * properties on the `accumulator`
+  * from `fount`
  * execution always results in a promise regardless of the asynchronous style used by individual functions in the stack
  * there are several ways to short-circuit a stack
    * throw an error
@@ -114,6 +118,26 @@ modifiedStack.insertBefore( "two", modifier );
 // default stack's call order: one -> two
 // modified stack's call order: one -> modifier -> two
 
+```
+
+### Combining steps from different stacks
+There _may_ be occasions where you want some steps from a shared stack module but need to swap parts out:
+
+```js
+var fount = require( "fount" );
+var snap = require( "snapstack" )( { fount: fount } );
+
+// imagin that from this we end up with stacks named after letters in the alphabet ...
+snap.load( [ "./stacks" ] )
+	.then( function() {
+		// you can create a new stack using the stack name and step names in place of functions:
+		snap.stack( [ "A.one", "B.two", "A.three", "D.four" ], "custom" );
+		return snap.execute( "custom" )( {}, {} );
+	} );
+
+// if any of the stack or step names dont' exist or haven't been loaded yet you'll
+// get an exception, in this case, creating the custom stack here would blow up
+// because the promise returned for loading hasn't completed yet
 ```
 
 ### Conditions
