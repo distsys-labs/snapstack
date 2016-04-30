@@ -324,6 +324,9 @@ var newStack = stack.clone();
 newStack.prepend( () => {}, "someNewStackInitializer" );
 ```
 
+#### `appendStack( stackToAppend )`
+Appends all steps from the `stackToAppend` to the steps on this stack.
+
 #### `execute( context, accumulator )`
 Execute runs the stack returning a promise for the result. The `context` will set `this` for each function in the stack while `accumulator` will be passed as the first argument to every function.
 
@@ -379,3 +382,6 @@ stack.prepend( doAThing );
 // anonymous functions need a name
 stack.prepend( () => {}, "doAnotherThing" );
 ```
+
+#### `prependStack( stackToAppend )`
+Appends all steps from the `stackToAppend` to the steps on this stack.

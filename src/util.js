@@ -118,6 +118,7 @@ function resolve() {
 
 function wrap( fount, fn ) {
 	var argumentList = getArguments( fn ).slice( 1 );
+	console.log( argumentList );
 	if( _.includes( callbacks, _.last( argumentList ) ) ) {
 		argumentList.pop();
 	}

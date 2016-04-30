@@ -20,14 +20,23 @@ function append( stack, fount, fn, name ) {
 	addFunction( stack, fount, name, fn );
 }
 
+function appendStack( stack, source ) {
+	_.each( source.steps, function( stepName ) {
+		stack.steps.push( stepName );
+		stack.calls[ stepName ] = source.calls[ stepName ];
+	} );
+}
+
 function attach( state, stack, fount ) {
 	var merged = Object.assign( stack, {
 		append: append.bind( null, stack, fount ),
+		appendStack: appendStack.bind( null, stack ),
 		clone: clone.bind( null, state, stack, fount ),
 		execute: execute.bind( null, stack ),
 		insertAfter: insertAfter.bind( null, stack, fount ),
 		insertBefore: insertBefore.bind( null, stack, fount ),
 		prepend: prepend.bind( null, stack, fount ),
+		prependStack: prependStack.bind( null, stack ),
 	} );
 	state.stacks[ stack.name ] = stack;
 	return merged;
@@ -40,7 +49,7 @@ function clone( state, stack, fount, name ) {
 	return attach( state, copy, fount );
 }
 
-function createStack( state, fount, calls, name ) {
+function create( state, fount, calls, name ) {
 	if( _.isString( calls ) ) {
 		name = calls;
 		calls = undefined;
@@ -168,6 +177,13 @@ function prepend( stack, fount, fn, name ) {
 	addFunction( stack, fount, name, fn );
 }
 
+function prependStack( stack, source ) {
+	_.each( source.steps, function( stepName ) {
+		stack.steps.unshift( stepName );
+		stack.calls[ stepName ] = source.calls[ stepName ];
+	} );
+}
+
 module.exports = {
-	create: createStack
+	create: create
 };
