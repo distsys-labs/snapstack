@@ -6,7 +6,7 @@ var modlo = require( "modlo" );
 
 function addFunction( stack, fount, name, fn ) {
 	if( _.isFunction( fn ) ) {
-		stack.calls[ name ] = util.wrap( fount, fn );
+		stack.calls[ name ] = fn._wrapped ? fn : util.wrap( fount, fn );
 	} else if( _.isArray( fn ) && fn[ 0 ].then ) {
 		stack.calls[ name ] = util.getDifferentiator( fount, fn );
 	} else {

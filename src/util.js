@@ -1,4 +1,5 @@
 var _ = require( "lodash" );
+var when = require( "when" );
 var functionRegex = /(function\W*)?(\S+\W*)?[(]([^)]*)[)]\W*[{=>]\W*([\s\S]+)?[};]{0,}/m;
 var format = require( "util" ).format;
 var reserved = [ "next", "cb", "callback", "continue", "done" ];
@@ -52,7 +53,7 @@ function getDifferentiator( fount, fn ) {
 			);
 		}
 	} ) );
-	return function( context, acc, next ) {
+	var differentiated = function( context, acc, next ) {
 		// this little headache allows when conditions to return a promise
 		var promises = _.map( list, function( option ) {
 			var pass = option.when( acc );
@@ -81,6 +82,8 @@ function getDifferentiator( fount, fn ) {
 				}
 			} );
 	};
+	differentiated._wrapped = true;
+	return differentiated;
 }
 
 function invokeFount( call, args ) {
@@ -121,7 +124,7 @@ function wrap( fount, fn ) {
 	if( _.includes( callbacks, _.last( argumentList ) ) ) {
 		argumentList.pop();
 	}
-	return function( context, acc, next ) {
+	var wrapped = function( context, acc, next ) {
 		var values = _.reduce( argumentList, function( args, argName ) {
 			if( context && context[ argName ] ) {
 				args.push( context[ argName ] );
@@ -145,6 +148,8 @@ function wrap( fount, fn ) {
 				}
 			} );
 	};
+	wrapped._wrapped = true;
+	return wrapped;
 }
 
 module.exports = {
