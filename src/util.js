@@ -1,6 +1,7 @@
 var _ = require( "lodash" );
 var when = require( "when" );
-var functionRegex = /(function\W*)?(\S+\W*)?[(]([^)]*)[)]\W*[{=>]\W*([\s\S]+)?[};]{0,}/m;
+// var functionRegex = /(function\W*)?(\S+\W*)?[(]?([^)]=>*)[)]?\W*[{=>]\W*([\s\S]+)?[};]{0,}/m;
+var functionRegex = /(function)?(\s[a-zA-Z0-9_]*)?[(]?([^=\>)]*)[)]?\W*[{=>]*\W*([\s\S]+)?[};]{0,}/m;
 var format = require( "util" ).format;
 var reserved = [ "next", "cb", "callback", "continue", "done" ];
 var callbacks = [ "next", "cb", "callback", "continue", "done" ];
@@ -102,7 +103,7 @@ function parseFunction( fn ) {
 	var source = fn.toString();
 	var parts = functionRegex.exec( source );
 	return {
-		name: parts[ 2 ],
+		name: parts[ 2 ] ? parts[ 2 ].trim() : undefined,
 		arguments: _.filter( parts[ 3 ]
 			.replace( /\s/g, "" )
 			.split( "," ) ),

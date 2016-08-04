@@ -68,5 +68,49 @@ describe( "Utility Module", function() {
 				fount.purgeAll();
 			} );
 		} );
+
+		describe( "when parsing function formats", () => {
+			it( "should parse es6 noop", () => {
+				utility.parseFunction( () => {} ).should.partiallyEql( {
+					arguments: [],
+					name: undefined
+				} );
+			} );
+
+			it( "should parse es6 unit format", () => {
+				utility.parseFunction( x => x ).should.partiallyEql( {
+					arguments: [ "x" ],
+					name: undefined
+				} );
+			} );
+
+			it( "should parse es6 arrow shorthand", () => {
+				utility.parseFunction( ( x, y ) => x + y ).should.partiallyEql( {
+					arguments: [ "x", "y" ],
+					name: undefined
+				} );
+			} );
+
+			it( "should parse es6 arrow with body", () => {
+				utility.parseFunction( ( x, y ) => { return x + y; } ).should.partiallyEql( {
+					arguments: [ "x", "y" ],
+					name: undefined
+				} );
+			} );
+
+			it( "should parse named function", () => {
+				utility.parseFunction( function test1( x, y ) { return x + y; } ).should.partiallyEql( {
+					arguments: [ "x", "y" ],
+					name: "test1"
+				} );
+			} );
+
+			it( "should parse anonymous function", () => {
+				utility.parseFunction( function () {} ).should.partiallyEql( {
+					arguments: [],
+					name: ""
+				} );
+			} );
+		} );
 	} );
 } );
