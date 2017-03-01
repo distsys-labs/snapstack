@@ -1,5 +1,4 @@
 var _ = require( "lodash" );
-var when = require( "when" );
 // var functionRegex = /(function\W*)?(\S+\W*)?[(]?([^)]=>*)[)]?\W*[{=>]\W*([\s\S]+)?[};]{0,}/m;
 var functionRegex = /(function)?(\s[a-zA-Z0-9_]*)?[(]?([^=\>)]*)[)]?\W*[{=>]*\W*([\s\S]+)?[};]{0,}/m;
 var format = require( "util" ).format;
@@ -64,10 +63,10 @@ function getDifferentiator( fount, fn ) {
 					return { when: result, fn: option.then }
 				} );
 			} else {
-				return when.resolve( { when: pass, fn: option.then } );
+				return Promise.resolve( { when: pass, fn: option.then } );
 			}
 		} );
-		return when.all( promises )
+		return Promise.all( promises )
 			.then( function( list ) {
 				var option = _.find( list, function( option ) {
 					return option.when;
@@ -76,7 +75,7 @@ function getDifferentiator( fount, fn ) {
 					return option.fn( context, acc, next );	
 				} else {
 					if( context._lastCall ) {
-						return when.reject( new Error( "The call stack failed to meet any of the supported conditions" ) );
+						return Promise.reject( new Error( "The call stack failed to meet any of the supported conditions" ) );
 					} else {
 						next();	
 					}
@@ -139,7 +138,7 @@ function wrap( fount, fn ) {
 			return args;
 		}, [ acc ] );
 		values.push( next );
-		return when.all( values )
+		return Promise.all( values )
 			.then( function( result ) {
 				var x = fn.apply( context, result );
 				if( x && x.then ) {

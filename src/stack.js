@@ -1,5 +1,4 @@
 var _ = require( "lodash" );
-var when = require( "when" );
 var format = require( "util" ).format;
 var util = require( "./util" );
 var modlo = require( "modlo" );
@@ -72,7 +71,7 @@ function create( state, fount, calls, name ) {
 
 function execute( stack, context, acc ) {
 	context = context || {};
-	return when.promise( function( resolve, reject ) {
+	return new Promise( function( resolve, reject ) {
 		executeStep( stack, context, acc || {}, 0, resolve, reject );
 	} );
 }

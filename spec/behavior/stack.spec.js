@@ -4,6 +4,7 @@ var snap = require( "../../src/index" )( { config: fount } );
 var createStack = snap.stack;
 var load = snap.load;
 var exec = snap.execute;
+var when = require( "when" );
 
 function promiseOne( acc, next ) {
 	return when();

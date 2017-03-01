@@ -1,6 +1,6 @@
 {
   "name": "snapstack",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A flexible approach to building middleware stacks",
   "main": "src/index.js",
   "scripts": {
@@ -21,10 +21,9 @@
   },
   "homepage": "https://github.com/arobson/snapstack#readme",
   "dependencies": {
-    "fount": "~1.0.0-1",
+    "fount": "~1.0.0-3",
     "modlo": "1.1.x",
-    "lodash": "^4.6.1",
-    "when": "^3.7.7"
+    "lodash": "^4.6.1"
   },
   "devDependencies": {
     "biggulp": "~1.2.0",

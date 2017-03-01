@@ -1,14 +1,12 @@
-var chai = require( 'chai' );
-chai.use( require( 'chai-as-promised' ) );
+var chai = require( "chai" );
+chai.use( require( "chai-as-promised" ) );
 global.should = chai.should();
 global.expect = chai.expect;
-var _ = global._ = require( 'lodash' );
-global.when = require( 'when' );
-global.lift = require( 'when/node' ).lift;
-global.seq = require( 'when/sequence' );
-global.fs = require( 'fs' );
-global.path = require( 'path' );
-
+var _ = global._ = require( "lodash" );
+global.seq = require( "when/sequence" );
+global.fs = require( "fs" );
+global.path = require( "path" );
+var when = require( "when" );
 /*
 global.sinon = require( 'sinon' );
 global.proxyquire = require( 'proxyquire' ).noPreserveCache();
@@ -18,7 +16,7 @@ chai.use( sinonChai );
 
 function deepCompare( a, b, k ) {
 	var diffs = [];
-	if ( b === undefined ) {
+	if ( b === undefined && a !== undefined ) {
 		diffs.push( "expected " + k + " to equal " + a + " but was undefined " );
 	} else if ( _.isObject( a ) || _.isArray( a ) ) {
 		_.each( a, function( v, c ) {

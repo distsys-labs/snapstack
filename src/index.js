@@ -1,5 +1,4 @@
 var _ = require( "lodash" );
-var when = require( "when" );
 var format = require( "util" ).format;
 var createStack = require( "./stack" ).create;
 var modlo = require( "modlo" );
@@ -34,7 +33,7 @@ function load( state, loader, list ) {
 				return fount.resolve( stackModuleName )
 					.then( processModule.bind( null, state, fount, stackModuleName ) );
 			} );
-			return when.all( promises )
+			return Promise.all( promises )
 				.then( function( stacks ) {
 					return _.reduce( _.filter( _.flatten( stacks ) ), function( acc, stack ) {
 						acc[ stack.name ] = stack;
