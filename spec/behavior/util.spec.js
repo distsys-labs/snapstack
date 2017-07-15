@@ -1,5 +1,4 @@
 require('../setup')
-var when = require('when')
 var fount = require('fount')
 var utility = require('../../src/util')
 
@@ -13,7 +12,7 @@ describe('Utility Module', function () {
         config = {}
         fount.register('a', 1)
         fount.register('b', function () { return 2 })
-        fount.register('c', when(3))
+        fount.register('c', Promise.resolve(3))
       })
 
       it("should get state's fount instance", function () {
@@ -45,7 +44,7 @@ describe('Utility Module', function () {
         config = { fount: fount }
         fount.register('a', 1)
         fount.register('b', function () { return 2 })
-        fount.register('c', when(3))
+        fount.register('c', Promise.resolve(3))
       })
 
       it("should get config's fount instance", function () {

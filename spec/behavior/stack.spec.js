@@ -1,21 +1,20 @@
 require('../setup')
-var fount = require('fount')
-var snap = require('../../src/index')({ config: fount })
-var createStack = snap.stack
-var load = snap.load
-var exec = snap.execute
-var when = require('when')
+const fount = require('fount')
+const snap = require('../../src/index')({ config: fount })
+const createStack = snap.stack
+const load = snap.load
+const exec = snap.execute
 
 function promiseOne (acc, next) {
-  return when()
+  return Promise.resolve()
 }
 
 function promiseTwo (acc, next) {
-  return when()
+  return Promise.resolve()
 }
 
 function promiseThree (acc, next) {
-  return when()
+  return Promise.resolve()
 }
 
 function promiseFour (acc, next) {
@@ -23,7 +22,7 @@ function promiseFour (acc, next) {
 }
 
 function promiseResult (acc, next) {
-  return when(3)
+  return Promise.resolve(3)
 }
 
 function promiseException (acc, next) {
@@ -31,7 +30,7 @@ function promiseException (acc, next) {
 }
 
 function promiseReject (acc, next) {
-  return when.reject(new Error('no'))
+  return Promise.reject(new Error('no'))
 }
 
 function callbackOne (acc, next) {
@@ -215,7 +214,7 @@ describe('Stack', function () {
       one = createStack({
         name: 'one',
         a: function () {
-          return when()
+          return Promise.resolve()
         },
         b: function (acc, next) {
           process.nextTick(next)
@@ -230,7 +229,7 @@ describe('Stack', function () {
           process.nextTick(next)
         },
         function b (x, env, next) {
-          return when()
+          return Promise.resolve()
         },
         function c (acc, next) {
           next('two-a')
@@ -241,7 +240,7 @@ describe('Stack', function () {
       four = two.clone('four')
       five = one.clone('five')
 
-      three.insertBefore('c', function d () { return when('one-b') })
+      three.insertBefore('c', function d () { return Promise.resolve('one-b') })
       four.insertAfter('b', function e () { return 'two-b' })
       five.prepend(function f () { return 1 })
     })
@@ -303,7 +302,7 @@ describe('Stack', function () {
           next()
         },
         function b () {
-          return when()
+          return Promise.resolve()
         },
         function c (acc, next) {
           next('c')
