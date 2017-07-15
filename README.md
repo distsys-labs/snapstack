@@ -1,14 +1,17 @@
 ## snapstack
 
-Create stacks of functions from heterogenous asynchronous styles. Initially built for middleware stacks. This is a bit of an experiment/toy that I hope to use in other projects.
+Create stacks of functions from heterogenous asynchronous styles. Initially built for middleware stacks.
+
+[![Build Status][travis-image]][travis-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
 
 ### caveat emptor
-snapstack doesn't prevent side-effects and certain use-cases will probably require the use there-of.
+snapstack doesn't prevent side-effects and some use-cases may require them.
 
 ## Install
 
 ```bash
-npm install snapstack -S
+npm i snapstack
 ```
 
 ## Concepts
@@ -40,13 +43,11 @@ Throwing, resolving to an error, returning an error or rejecting a promise all r
 You can load sets of functions from modules under a specified folder or from an npm module. The resulting stacks will be registered with fount under the stack container and can be executed by name. A list of all loaded stacks are returned as a hash.
 
 ```js
-var fount = require( "fount" );
-var snap = require( "snapstack" )( { fount: fount } );
+const fount = require('fount')
+const snap = require('snapstack')({ fount: fount })
 
-snap.load( [ "./stacks", "someNpmLib" ] )
-	.then( function() {
-		return snap.execute( "aLoadedStack" )( {}, {} );
-	} );
+snap.load([ './stacks', 'someNpmLib' ])
+	.then(() => snap.execute('aLoadedStack')({}, {}))
 ```
 
 ## Use
@@ -54,86 +55,84 @@ snap.load( [ "./stacks", "someNpmLib" ] )
 ### really simple
 
 ```js
-var fount = require( "fount" );
-var snap = require( "snapstack" )( { fount: fount } );
+const fount = require('fount')
+const snap = require('snapstack')({ fount: fount })
 
-function callbackStyle( acc, cb ) {
-	acc.a = 1;
-	cb();
+function callbackStyle(acc, cb) {
+	acc.a = 1
+	cb()
 }
 
-function promiseStyle( acc, a ) {
-	acc.b = a + 1;
-	return when();
+function promiseStyle(acc, a) {
+	acc.b = a + 1
+	return Promise.resolve()
 }
 
-function plain( acc, b ) {
-	return b + 1;
+function plain(acc, b) {
+	return b + 1
 }
 
-var myStack = snap.stack( [
+const myStack = snap.stack([
 	callbackStyle,
 	promiseStyle,
 	plain
-], "simple" );
+], 'simple')
 
 // the context and accumulator are both empty hashes
-myStack.execute( {}, {} )
-	.then( function( result ) {
+myStack.execute({}, {})
+	.then(result => {
 		// result == 3;
-	} );
-
+	})
 ```
 
 ### cloning and modifying
 
 ```js
-var fount = require( "fount" );
-var snap require( "snapstack" )( { fount: fount } );
+const fount = require('fount')
+const snap require('snapstack')({ fount: fount })
 
-function one( acc, id ) {
-	return someApi.call( id )
-		.then( function( result ) {
-			acc.one = result;
-		} );
+function one(acc, id) {
+	return someApi.call(id)
+		.then(result => {
+			acc.one = result
+		})
 }
 
-function two( acc, one ) {
-	return otherApi.call( one )
-		.then( function( result ) {
-			acc.two = result;
-		} );
+function two(acc, one) {
+	return otherApi.call(one)
+		.then(result => {
+			acc.two = result
+		})
 }
 
-function modifier( acc, one, cb ) {
-	acc.one = { something: "completely different" };
-	cb();
+function modifier(acc, one, cb) {
+	acc.one = { something: 'completely different' }
+	cb()
 }
 
-var defaultStack = snap.stack( [ one, two ], "default" );
+const defaultStack = snap.stack([ one, two ], 'default')
 
-var modifiedStack = defaultStack.clone( "modified" );
-modifiedStack.insertBefore( "two", modifier );
+const modifiedStack = defaultStack.clone('modified')
+modifiedStack.insertBefore('two', modifier)
 
 // default stack's call order: one -> two
 // modified stack's call order: one -> modifier -> two
-
 ```
 
 ### Combining steps from different stacks
 There _may_ be occasions where you want some steps from a shared stack module but need to swap parts out:
 
 ```js
-var fount = require( "fount" );
-var snap = require( "snapstack" )( { fount: fount } );
+const fount = require('fount')
+const snap = require('snapstack')({ fount: fount })
 
 // imagin that from this we end up with stacks named after letters in the alphabet ...
-snap.load( [ "./stacks" ] )
-	.then( function() {
+snap.load([ './stacks' ])
+	.then(() => {
 		// you can create a new stack using the stack name and step names in place of functions:
-		snap.stack( [ "A.one", "B.two", "A.three", "D.four" ], "custom" );
-		return snap.execute( "custom" )( {}, {} );
-	} );
+		snap.stack([ 'A.one', 'B.two', 'A.three', 'D.four' ], 'custom')
+		return snap.execute('custom')({}, {})
+	})
 
 // if any of the stack or step names dont' exist or haven't been loaded yet you'll
 // get an exception, in this case, creating the custom stack here would blow up
@@ -154,21 +153,21 @@ The `when` property of the condition may be a set of properties that must be tru
 	handle: [
 		{
 			when: { version: 1 }, // providing a set of properties and values to filter requests for the handler
-			then: function( envelope ) {
+			then: (envelope) => {
 				...
 			}
 		},
 		{
-			when: function( envelope ) { // provide a predicate to test the envelope
+			when: (envelope) => { // provide a predicate to test the envelope
 				return envelope.version === 2;
 			},
-			then: function( envelope ) {
+			then: (envelope) => {
 				...
 			}
 		},
 		{
 			when: true, // use at the end as a catch-all if desired
-			then: function( envelope ) {
+			then: (envelope) => {
 				...
 			}
 		}
@@ -178,19 +177,19 @@ The `when` property of the condition may be a set of properties that must be tru
 
 ## API
 
-### `( [{config}] )`
+### `([{config}])`
 Initializes an instance of the library, config hash is optional.
 
 __config options__
 ```js
 {
 	fount: fount // provide optional fount instance
-	container: "stack" // fount container to register stacks in
+	container: 'stack' // fount container to register stacks in
 }
 ```
 
 ```js
-var snap = require( "snap" )(); // use internal fount instance and "stack" container
+const snap = require('snap')(); // use internal fount instance and "stack" container
 ```
 
 ### `.fount`
@@ -200,10 +199,10 @@ The fount instance used by any stacks created. A default internal instance will 
 Loads one or more stacks from a file module or NPM library:
 
 ```js
-snap.load( "./aStack" )
-	.then( function( stacks ) {
-		return stacks[ "stackName" ].execute( {}, {} );
-	} );
+snap.load('./aStack')
+	.then(stacks => {
+		return stacks[ 'stackName' ].execute({}, {})
+	})
 ```
 
 Stack modules can return a stack a few different ways:
@@ -213,8 +212,8 @@ Stack modules can return a stack a few different ways:
 __single stack__
 ```js
 module.exports = {
-	name: "", // stack name
-	one: function( acc, next ) { ... },
+	name: '', // stack name
+	one: (acc, next) => {},
 	...
 };
 ```
@@ -223,11 +222,11 @@ __multiple stacks as a hash__
 ```js
 module.exports = {
 	stackOne: {
-		one: function( acc, next ) { ... },
+		one: (acc, next) => {},
 		...
 	},
 	stackTwo: [
-		function one( acc, next ) { ... }
+		(acc, next) => {}
 	],
 	...
 }
@@ -239,7 +238,7 @@ __single stack as an array of named functions__
 > Note: module name will determine stack name
 ```js
 module.exports = [
-	function one( acc, next ) { ... },
+	function one (acc, next) {},
 	...
 ];
 ```
@@ -249,7 +248,7 @@ __multiple stacks as an array of hashes__
 module.exports = [
 	{
 		name: "stackOne", // stack name
-		one: function( acc, next ) { ... },
+		one: ( acc, next ) => {},
 		...
 	},
 	...
@@ -282,24 +281,24 @@ function a() { ... };
 function b() { ... };
 function c() { ... };
 
-var stack1 = snap.stack( [ a, b, c ], "stackName" );
+const stack1 = snap.stack( [ a, b, c ], 'stackName' );
 
-var stack2 = snap.stack( {
-	_name: "stackName",
+const stack2 = snap.stack( {
+	_name: 'stackName',
 	a: () => {},
 	b: () => {},
 	c: () => {}
 } );
 ```
 
-#### `execute( stackName, context, accumulator )`
+#### `execute(stackName, context, accumulator)`
 Executes a stack by name. See Stack API for more on how this works.
 
 ### Stack API
 
 > Note: in the calls that add functions to the stack, if the function is anonymous, you _must_ provide the name via the `name` argument. It is only optional for named functions.
 
-#### `append( function, [name] )`
+#### `append(function, [name])`
 Appends the function to the end of the current stack.
 
 ```js
@@ -308,36 +307,36 @@ function doAThing() {
 }
 
 // named functions don't need a name parameter
-stack.append( doAThing );
+stack.append(doAThing)
 
 // anonymous functions need a name
-stack.append( () => {}, "doAnotherThing" );
+stack.append(() => {}, 'doAnotherThing')
 ```
 
-#### `clone( cloneName )`
+#### `clone(cloneName)`
 Clones the stack. Use this when you want to create alternate stacks while keeping the original in-tact. Requires a different name for the new stack.
 
 ```js
-var newStack = stack.clone();
+const newStack = stack.clone()
 
 // new stack gets a new step at the beginning without changing stack
-newStack.prepend( () => {}, "someNewStackInitializer" );
+newStack.prepend(() => {}, 'someNewStackInitializer')
 ```
 
-#### `appendStack( stackToAppend )`
+#### `appendStack(stackToAppend)`
 Appends all steps from the `stackToAppend` to the steps on this stack.
 
 #### `execute( context, accumulator )`
 Execute runs the stack returning a promise for the result. The `context` will set `this` for each function in the stack while `accumulator` will be passed as the first argument to every function.
 
 ```js
-stack.execute( {}, {} )
-	.then( function( result ) {
+stack.execute({}, {})
+	.then((result) => {
 		// result of the stack execution
-	} );
+	})
 ```
 
-#### `insertBefore( step, function, [name] )`
+#### `insertBefore(step, function, [name])`
 Inserts the function _before_ the named step in the stack. 
 
 ```js
@@ -346,13 +345,13 @@ function doAThing() {
 }
 
 // named functions don't need a name parameter
-stack.append( doAThing );
+stack.append(doAThing)
 
 // inserts doAnotherThing BEFORE doAThing
-stack.insertBefore( "doAThing", () => {}, "doAnotherThing" );
+stack.insertBefore('doAThing', () => {}, 'doAnotherThing')
 ```
 
-#### `insertAfter( step, function, [name] )`
+#### `insertAfter(step, function, [name])`
 Inserts the function _after_ the named step in the stack. 
 
 ```js
@@ -361,14 +360,14 @@ function doAThing() {
 }
 
 // named functions don't need a name parameter
-stack.append( doAThing );
+stack.append(doAThing)
 
 // inserts doAnotherThing AFTER doAThing
-stack.insertAfter( "doAThing", () => {}, "doAnotherThing" );
+stack.insertAfter('doAThing', () => {}, 'doAnotherThing')
 ```
 
 
-#### `prepend( function, [name] )`
+#### `prepend(function, [name])`
 Prepends the function to the beginning of the current stack.
 
 ```js
@@ -377,11 +376,16 @@ function doAThing() {
 }
 
 // named functions don't need a name parameter
-stack.prepend( doAThing );
+stack.prepend(doAThing)
 
 // anonymous functions need a name
-stack.prepend( () => {}, "doAnotherThing" );
+stack.prepend(() => {}, 'doAnotherThing')
 ```
 
-#### `prependStack( stackToAppend )`
+#### `prependStack(stackToAppend)`
 Appends all steps from the `stackToAppend` to the steps on this stack.
+
+[travis-url]: https://travis-ci.org/deftly/snapstack
+[travis-image]: https://travis-ci.org/deftly/snapstack.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/deftly/snapstack?branch=master
+[coveralls-image]: https://coveralls.io/repos/github/deftly/snapstack/badge.svg?branch=master
