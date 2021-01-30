@@ -1,6 +1,6 @@
 {
   "name": "snapstack",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A flexible approach to building middleware stacks",
   "main": "src/index.js",
   "scripts": {
