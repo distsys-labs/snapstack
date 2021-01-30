@@ -1,18 +1,18 @@
 const _ = require('fauxdash')
-const reserved = [ 'next', 'cb', 'callback', 'continue', 'done' ]
-const callbacks = [ 'next', 'cb', 'callback', 'continue', 'done' ]
+const reserved = ['next', 'cb', 'callback', 'continue', 'done']
+const callbacks = ['next', 'cb', 'callback', 'continue', 'done']
 
 function getArgumentsFor (...parameters) {
   const functions = _.map(parameters, _.parseFunction)
   return _.reduce(functions, function (acc, fn) {
     const functionArgs = fn.arguments.slice(1)
-    const argList = [ functionArgs ].concat(reserved.concat(acc.arguments))
+    const argList = [functionArgs].concat(reserved.concat(acc.arguments))
     const args = _.without.apply(null, argList)
     const callbacks = _.intersection(functionArgs, reserved)
     acc.arguments = acc.arguments.concat(args)
     acc.callbacks = _.uniq(acc.callbacks.concat(callbacks))
     return acc
-  }, { arguments: [ 'envelope' ], callbacks: [] })
+  }, { arguments: ['envelope'], callbacks: [] })
 }
 
 function getContainer (state, configuration) {
@@ -83,7 +83,7 @@ function invokeFount (call, args) {
   const state = args.shift()
   const configuration = args.shift()
   const container = getContainer(state, configuration)
-  return container[ call ].apply(container, args)
+  return container[call].apply(container, args)
 }
 
 function inject (...parameters) {
@@ -105,17 +105,17 @@ function wrap (fount, fn) {
   }
   const wrapped = function (context, acc, next) {
     const values = _.reduce(argumentList, function (args, argName) {
-      if (context && context[ argName ]) {
-        args.push(context[ argName ])
-      } else if (acc && acc[ argName ]) {
-        args.push(acc[ argName ])
+      if (context && context[argName]) {
+        args.push(context[argName])
+      } else if (acc && acc[argName]) {
+        args.push(acc[argName])
       } else if (fount.canResolve(argName)) {
         args.push(fount.resolve(argName))
       } else {
         args.push(undefined)
       }
       return args
-    }, [ acc ])
+    }, [acc])
     values.push(next)
     return Promise.all(values)
       .then(function (result) {

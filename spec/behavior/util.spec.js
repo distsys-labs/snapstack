@@ -1,11 +1,11 @@
 require('../setup')
-var fount = require('fount')
-var utility = require('../../src/util')
+const fount = require('fount')
+const utility = require('../../src/util')
 
 describe('Utility Module', function () {
   describe('Fount', function () {
     describe('when getting container from state', function () {
-      var state, config
+      let state, config
 
       before(function () {
         state = { fount: fount }
@@ -25,7 +25,7 @@ describe('Utility Module', function () {
       })
 
       it('should resolve values from container', function () {
-        return utility.resolve(state, config, [ 'a', 'b', 'c' ])
+        return utility.resolve(state, config, ['a', 'b', 'c'])
           .then(function (results) {
             return results.a + results.b + results.c
           }).should.eventually.equal(6)
@@ -37,7 +37,7 @@ describe('Utility Module', function () {
     })
 
     describe('when configuration provides a fount instance', function () {
-      var state, config
+      let state, config
 
       before(function () {
         state = { fount: {} }
@@ -57,7 +57,7 @@ describe('Utility Module', function () {
       })
 
       it('should resolve values from container', function () {
-        return utility.resolve(state, config, [ 'a', 'b', 'c' ])
+        return utility.resolve(state, config, ['a', 'b', 'c'])
           .then(function (results) {
             return results.a + results.b + results.c
           }).should.eventually.equal(6)

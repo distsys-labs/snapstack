@@ -4,9 +4,9 @@ const util = require('./util')
 
 function addFunction (stack, fount, name, fn) {
   if (_.isFunction(fn)) {
-    stack.calls[ name ] = fn._wrapped ? fn : util.wrap(fount, fn)
-  } else if (Array.isArray(fn) && fn[ 0 ].then) {
-    stack.calls[ name ] = util.getDifferentiator(fount, fn)
+    stack.calls[name] = fn._wrapped ? fn : util.wrap(fount, fn)
+  } else if (Array.isArray(fn) && fn[0].then) {
+    stack.calls[name] = util.getDifferentiator(fount, fn)
   } else {
     throw new Error(format('Cannot add non-function %s to stack: %s', name, fn))
   }
@@ -21,7 +21,7 @@ function append (stack, fount, fn, name) {
 function appendStack (stack, source) {
   _.each(source.steps, function (stepName) {
     stack.steps.push(stepName)
-    stack.calls[ stepName ] = source.calls[ stepName ]
+    stack.calls[stepName] = source.calls[stepName]
   })
 }
 
@@ -36,7 +36,7 @@ function attach (state, stack, fount) {
     prepend: prepend.bind(null, stack, fount),
     prependStack: prependStack.bind(null, stack)
   })
-  state.stacks[ stack.name ] = stack
+  state.stacks[stack.name] = stack
   return merged
 }
 
@@ -81,15 +81,15 @@ function executeStep (stack, context, acc, index, resolve, reject, error, result
   if (error || result) {
     finalize(resolve, reject, error, result)
   }
-  const step = stack.steps[ index ]
-  const fn = stack.calls[ step ]
+  const step = stack.steps[index]
+  const fn = stack.calls[step]
 
   const nextIndex = index + 1
   if (!fn || !(fn instanceof Function)) {
     reject(new Error(format("Could not invoke step '%s' as it is not a valid function", step)))
     return
   }
-  var cb
+  let cb
   function onResult (result) {
     if (result) {
       if (result.then || result._promise) {
@@ -129,14 +129,14 @@ function initialize (state, stack, fount, calls = {}) {
   _.each(calls, function (call, name) {
     if (_.isString(call) && parseInt(name) >= 0) {
       const parts = call.split('.')
-      const stackName = parts[ 0 ]
-      const callName = parts[ 1 ]
-      const sourceStack = state.stacks[ stackName ]
+      const stackName = parts[0]
+      const callName = parts[1]
+      const sourceStack = state.stacks[stackName]
       if (sourceStack) {
-        const step = sourceStack.calls[ callName ]
+        const step = sourceStack.calls[callName]
         if (step) {
           stack.steps.push(callName)
-          stack.calls[ callName ] = step
+          stack.calls[callName] = step
         } else {
           console.error(format(
             "Could not find step named '%s' in stack '%s' as specified by step '%s', it will not be included in the stack",
@@ -149,7 +149,7 @@ function initialize (state, stack, fount, calls = {}) {
           stackName, call
         ))
       }
-    } else if (_.isFunction(call) || (Array.isArray(call) && call[ 0 ].then)) {
+    } else if (_.isFunction(call) || (Array.isArray(call) && call[0].then)) {
       const appliedName = name || call.name
       append(stack, fount, call, appliedName)
     }
@@ -179,7 +179,7 @@ function prepend (stack, fount, fn, name) {
 function prependStack (stack, source) {
   _.each(source.steps, function (stepName) {
     stack.steps.unshift(stepName)
-    stack.calls[ stepName ] = source.calls[ stepName ]
+    stack.calls[stepName] = source.calls[stepName]
   })
 }
 

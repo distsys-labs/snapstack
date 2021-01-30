@@ -72,7 +72,7 @@ function callbackError (acc, next) {
 describe('Stack', function () {
   describe('with uniform promise stack', function () {
     describe('where every step resolves', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('allPromises')
         stack.append(promiseOne)
@@ -88,7 +88,7 @@ describe('Stack', function () {
     })
 
     describe('with short-circuit', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('shortCircuitedPromises')
         stack.append(promiseOne)
@@ -105,7 +105,7 @@ describe('Stack', function () {
     })
 
     describe('with rejected promise', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('rejectedPromise')
         stack.append(promiseOne)
@@ -120,7 +120,7 @@ describe('Stack', function () {
     })
 
     describe('with thrown exception', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('thrower')
         stack.append(promiseOne)
@@ -141,7 +141,7 @@ describe('Stack', function () {
 
   describe('with uniform callback stack', function () {
     describe('where every step resolves', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('allCallbacks')
         stack.append(callbackOne)
@@ -157,7 +157,7 @@ describe('Stack', function () {
     })
 
     describe('with short-circuit', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('shortCircuitedCallbacks')
         stack.append(callbackOne)
@@ -174,7 +174,7 @@ describe('Stack', function () {
     })
 
     describe('with rejected callback', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('rejectedCallback')
         stack.append(callbackOne)
@@ -189,7 +189,7 @@ describe('Stack', function () {
     })
 
     describe('with thrown exception', function () {
-      var stack
+      let stack
       before(function () {
         stack = createStack('thrower2')
         stack.append(callbackOne)
@@ -209,7 +209,7 @@ describe('Stack', function () {
   })
 
   describe('with initialization and cloning', function () {
-    var one, two, three, four, five
+    let one, two, three, four, five
     before(function () {
       one = createStack({
         name: 'one',
@@ -268,7 +268,7 @@ describe('Stack', function () {
     it('should throw an error when adding invalid function', function () {
       expect(function () {
         one.append({}, 'g')
-      }).to.throw('Cannot add non-function g to stack: [object Object]')
+      }).to.throw('Cannot add non-function g to stack: {}')
     })
 
     it('should throw an error if a step is invalid or missing', function () {
@@ -292,7 +292,7 @@ describe('Stack', function () {
   })
 
   describe('with custom arguments', function () {
-    var one
+    let one
     before(function () {
       one = createStack([
         function a (acc, x, next) {
@@ -324,7 +324,7 @@ describe('Stack', function () {
   })
 
   describe('with loaded stacks', function () {
-    var stacks
+    let stacks
     before(function () {
       return load('./spec/stacks/*.js')
         .then(function (list) {

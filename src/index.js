@@ -9,13 +9,13 @@ function executeStack (state, fount, stackName, context, acc) {
 
 function isAStackSpec (spec) {
   return _.isFunction(spec) ||
-    (Array.isArray(spec) && spec[ 0 ].when)
+    (Array.isArray(spec) && spec[0].when)
 }
 
 function load (state, loader, list) {
   const files = []
   const names = []
-  list = _.isString(list) ? [ list ] : list
+  list = _.isString(list) ? [list] : list
   list.forEach(x => {
     if (/[/]/.test(x)) {
       files.push(x)
@@ -28,13 +28,13 @@ function load (state, loader, list) {
       const fount = result.fount
       const promises = result.loaded.map(stackModuleName => {
         return fount.resolve(stackModuleName)
-        .then(processModule.bind(null, state, fount, stackModuleName))
+          .then(processModule.bind(null, state, fount, stackModuleName))
       })
       return Promise.all(promises)
         .then(stacks => {
           const list = _.filter(_.flatten(stacks), x => x && x.steps && x.steps.length)
           return list.reduce((acc, stack) => {
-            acc[ stack.name ] = stack
+            acc[stack.name] = stack
             return acc
           }, {})
         })
@@ -43,7 +43,7 @@ function load (state, loader, list) {
 
 function processModule (state, fount, stackModuleName, stackModule) {
   if (Array.isArray(stackModule)) {
-    if (_.isFunction(stackModule[ 0 ])) {
+    if (_.isFunction(stackModule[0])) {
       return createStack(state, fount, stackModule, stackModuleName)
     } else {
       return _.map(stackModule, stack => {
